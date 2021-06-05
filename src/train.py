@@ -1,18 +1,18 @@
 # coding=utf-8
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1  as tf
 import pickle
 import datetime
 
 from model import NARRE
-
-tf.flags.DEFINE_string("word2vec", "../data/google.bin", "Wor2vec file with pre-trained embedings (default: None)")
-tf.flags.DEFINE_string("valid_data", "../../data/music/music.test", "Data for validation")
-tf.flags.DEFINE_string("para_data", "../../data/music/music.para", "Data parameters")
-tf.flags.DEFINE_string("train_data", "../../data/music/music.train", "Data for training")
-tf.flags.DEFINE_string("word_weight_user", "../../data/embedding/W_user.pk", "word2vec file from user vocabulary")
-tf.flags.DEFINE_string("word_weight_item", "../../data/embedding/W_item.pk", "word2vec file from item vocabulary")
+tf.disable_v2_behavior()
+tf.flags.DEFINE_string("word2vec", "/content/NARRE/data/google.bin", "Wor2vec file with pre-trained embedings (default: None)")
+tf.flags.DEFINE_string("valid_data", "/content/NARRE/data/music/music.test", "Data for validation")
+tf.flags.DEFINE_string("para_data", "/content/NARRE/data/music/music.para", "Data parameters")
+tf.flags.DEFINE_string("train_data", "/content/NARRE/data/music/music.train", "Data for training")
+tf.flags.DEFINE_string("word_weight_user", "/content/NARRE/data/embedding/W_user.pk", "word2vec file from user vocabulary")
+tf.flags.DEFINE_string("word_weight_item", "/content/NARRE/data/embedding/W_item.pk", "word2vec file from item vocabulary")
 # ===================================================
 
 # Model Hyperparameters
@@ -78,7 +78,7 @@ def dev_step(u_batch, i_batch, uid, iid, reuid, reiid, y_batch, writer=None):
 if __name__ == '__main__':
 
     FLAGS = tf.flags.FLAGS
-    FLAGS._parse_flags()
+    #FLAGS._parse_flags()
     print("\nParameters:")
     for attr, value in sorted(FLAGS.__flags.items()):
         print("{}={}".format(attr.upper(), value))
@@ -151,20 +151,20 @@ if __name__ == '__main__':
 
             saver = tf.train.Saver()
 
-            if FLAGS.word2vec:
+            # if FLAGS.word2vec:
 
-                # load word weight user
-                initW = np.random.uniform(-1.0, 1.0, (len(vocabulary_user), FLAGS.embedding_dim))
-                W_u_file = open(FLAGS.word_weight_user, 'rb')
-                initW = pickle.load(W_u_file)
-                sess.run(narre.W1.assign(initW))
+            #     # load word weight user
+            #     initW = np.random.uniform(-1.0, 1.0, (len(vocabulary_user), FLAGS.embedding_dim))
+            #     W_u_file = open(FLAGS.word_weight_user, 'rb')
+            #     initW = pickle.load(W_u_file)
+            #     sess.run(narre.W1.assign(initW))
 
-                # load word weigth item
-                initW = np.random.uniform(-1.0, 1.0, (len(vocabulary_item), FLAGS.embedding_dim))
-                W_i_file = open(FLAGS.word_weight_item, 'rb')
-                initW = pickle.load(W_i_file)
-                sess.run(narre.W2.assign(initW))
-                print("get pre-trained initW")
+            #     # load word weigth item
+            #     initW = np.random.uniform(-1.0, 1.0, (len(vocabulary_item), FLAGS.embedding_dim))
+            #     W_i_file = open(FLAGS.word_weight_item, 'rb')
+            #     initW = pickle.load(W_i_file)
+            #     sess.run(narre.W2.assign(initW))
+            #     print("get pre-trained initW")
 
             epoch = 1
             best_mae = 5
