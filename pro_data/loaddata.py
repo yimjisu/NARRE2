@@ -6,7 +6,7 @@ import pandas as pd
 import pickle
 import numpy as np
 
-TPS_DIR = '../../data/music'
+TPS_DIR = 'content/NARRE/data/music'
 TP_file = os.path.join(TPS_DIR, 'Digital_Music_5.json')
 
 f = open(TP_file)
@@ -25,8 +25,8 @@ for line in f:
         print("unknown")
         continue
     reviews.append(js['reviewText'])
-    users_id.append(str(js['reviewerID']) + ",")
-    items_id.append(str(js['asin']) + ",")
+    users_id.append(str(js['reviewerID']))
+    items_id.append(str(js['asin']))
     ratings.append(str(js['overall']))
 
 # get primal data
@@ -38,7 +38,6 @@ data = pd.DataFrame(
      'reviews': pd.Series(reviews)}
 )[['user_id', 'item_id', 'ratings', 'reviews']]
 
-
 # trainsform data to index
 # ==================================================
 def get_count(tp, id):
@@ -48,15 +47,16 @@ def get_count(tp, id):
 
 
 usercount, itemcount = get_count(data, 'user_id'), get_count(data, 'item_id')
-unique_uid = usercount.index
-unique_sid = itemcount.index
+unique_uid = usercount.values
+unique_sid = itemcount.values
 
-item2id = dict((sid, i) for (i, sid) in enumerate(unique_sid))
-user2id = dict((uid, i) for (i, uid) in enumerate(unique_uid))
+item2id = dict((sid[0], i) for (i, sid) in enumerate(unique_sid))
+user2id = dict((uid[0], i) for (i, uid) in enumerate(unique_uid))
 
 def numerize(tp):
     uid = list(map(lambda x: user2id[x], tp['user_id']))
     sid = list(map(lambda x: item2id[x], tp['item_id']))
+    #print(uid, sid)
     tp['user_id'] = uid
     tp['item_id'] = sid
     return tp

@@ -4,20 +4,20 @@ import numpy as np
 import re
 import itertools
 from collections import Counter
-
-import tensorflow as tf
+import tensorflow.compat.v1  as tf
 import csv
 import pickle
 import os
 
-tf.flags.DEFINE_string("valid_data", "../../data/music/music_valid.csv", "Data for validation")
-tf.flags.DEFINE_string("test_data", "../../data/music/music_test.csv", "Data for testing")
-tf.flags.DEFINE_string("train_data", "../../data/music/music_train.csv", "Data for training")
-tf.flags.DEFINE_string("user_review", "../../data/music/user_review", "User's reviews")
-tf.flags.DEFINE_string("item_review", "../../data/music/item_review", "Item's reviews")
-tf.flags.DEFINE_string("user_review_id", "../../data/music/user_rid", "user_review_id")
-tf.flags.DEFINE_string("item_review_id", "../../data/music/item_rid", "item_review_id")
-tf.flags.DEFINE_string("stopwords", "../../data/stopwords", "stopwords")
+tf.disable_v2_behavior()
+tf.flags.DEFINE_string("valid_data", "/content/NARRE/data/music/music_valid.csv", "Data for validation")
+tf.flags.DEFINE_string("test_data", "/content/NARRE/data/music/music_test.csv", "Data for testing")
+tf.flags.DEFINE_string("train_data", "/content/NARRE/data/music/music_train.csv", "Data for training")
+tf.flags.DEFINE_string("user_review", "/content/NARRE/data/music/user_review", "User's reviews")
+tf.flags.DEFINE_string("item_review", "/content/NARRE/data/music/item_review", "Item's reviews")
+tf.flags.DEFINE_string("user_review_id", "/content/NARRE/data/music/user_rid", "user_review_id")
+tf.flags.DEFINE_string("item_review_id", "/content/NARRE/data/music/item_rid", "item_review_id")
+tf.flags.DEFINE_string("stopwords", "/content/NARRE/data/stopwords", "stopwords")
 
 def clean_str(string):
     """
@@ -307,9 +307,9 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
 
 
 if __name__ == '__main__':
-    TPS_DIR = "../../data/music"
+    TPS_DIR = "/content/NARRE/data/music"
     FLAGS = tf.flags.FLAGS
-    FLAGS._parse_flags()
+    #FLAGS._parse_flags()
 
     u_text, i_text, y_train, y_valid, vocabulary_user, vocabulary_inv_user, vocabulary_item, \
     vocabulary_inv_item, uid_train, iid_train, uid_valid, iid_valid, user_num, item_num, reid_user_train, reid_item_train, reid_user_valid, reid_item_valid = \

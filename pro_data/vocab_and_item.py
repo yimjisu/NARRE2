@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 import gensim
 
-EMB_DIR = '../../data/embedding'
+EMB_DIR = 'content/NARRE/data/embedding'
 EMB_file = os.path.join(EMB_DIR, 'GoogleNews-vectors-negative300.bin')
 
 W_USER_file = os.path.join(EMB_DIR, 'W_user.pk')
