@@ -6,7 +6,7 @@ import pandas as pd
 import pickle
 import numpy as np
 
-TPS_DIR = 'content/NARRE/data/music'
+TPS_DIR = '/content/NARRE/data/music'
 TP_file = os.path.join(TPS_DIR, 'Digital_Music_5.json')
 
 f = open(TP_file)
