@@ -10,14 +10,14 @@ import pickle
 import os
 
 tf.disable_v2_behavior()
-tf.flags.DEFINE_string("valid_data", "/content/NARRE/data/music/music_valid.csv", "Data for validation")
-tf.flags.DEFINE_string("test_data", "/content/NARRE/data/music/music_test.csv", "Data for testing")
-tf.flags.DEFINE_string("train_data", "/content/NARRE/data/music/music_train.csv", "Data for training")
-tf.flags.DEFINE_string("user_review", "/content/NARRE/data/music/user_review", "User's reviews")
-tf.flags.DEFINE_string("item_review", "/content/NARRE/data/music/item_review", "Item's reviews")
-tf.flags.DEFINE_string("user_review_id", "/content/NARRE/data/music/user_rid", "user_review_id")
-tf.flags.DEFINE_string("item_review_id", "/content/NARRE/data/music/item_rid", "item_review_id")
-tf.flags.DEFINE_string("stopwords", "/content/NARRE/data/stopwords", "stopwords")
+tf.flags.DEFINE_string("valid_data", "/content/NARRE2/data/music/music_valid.csv", "Data for validation")
+tf.flags.DEFINE_string("test_data", "/content/NARRE2/data/music/music_test.csv", "Data for testing")
+tf.flags.DEFINE_string("train_data", "/content/NARRE2/data/music/music_train.csv", "Data for training")
+tf.flags.DEFINE_string("user_review", "/content/NARRE2/data/music/user_review", "User's reviews")
+tf.flags.DEFINE_string("item_review", "/content/NARRE2/data/music/item_review", "Item's reviews")
+tf.flags.DEFINE_string("user_review_id", "/content/NARRE2/data/music/user_rid", "user_review_id")
+tf.flags.DEFINE_string("item_review_id", "/content/NARRE2/data/music/item_rid", "item_review_id")
+tf.flags.DEFINE_string("stopwords", "/content/NARRE2/data/stopwords", "stopwords")
 
 def clean_str(string):
     """
@@ -53,6 +53,7 @@ def pad_sentences(u_text, u_len, u2_len, padding_word="<PAD/>"):
         for ri in range(review_num):
             if ri < len(u_reviews):
                 sentence = u_reviews[ri]
+                print(sentence)
                 if review_len > len(sentence):
                     num_padding = review_len - len(sentence)
                     new_sentence = sentence + [padding_word] * num_padding
@@ -141,7 +142,7 @@ def load_data(train_data, valid_data, user_review, item_review, user_rid, item_r
     # Load and preprocess data
     # ===============================================
     print("load data")
-    u_text, i_text, y_train, y_valid, u_len, i_len, u2_len, i2_len, uid_train, iid_train, uid_valid, iid_valid, user_num, item_num \
+    u_text, i_text, u_time, i_time, y_train, y_valid, u_len, i_len, u2_len, i2_len, uid_train, iid_train, uid_valid, iid_valid, user_num, item_num \
         , reid_user_train, reid_item_train, reid_user_valid, reid_item_valid = \
         load_data_and_labels(train_data, valid_data, user_review, item_review, user_rid, item_rid, stopwords)
 
@@ -224,6 +225,7 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
             reid_user_train.append(u_rid[user_id])
         else:
             u_text[user_id] = []
+            u_time[user_id] = []
             for s, t1 in user_reviews[user_id]:
                 s1 = clean_str(s)
                 s1 = s1.split(" ")
@@ -239,11 +241,12 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
             reid_item_train.append(i_rid[item_id])
         else:
             i_text[item_id] = []
+            i_time[item_id] = []
             for s, t1 in item_reviews[item_id]:
                 s1 = clean_str(s)
                 s1 = s1.split(" ")
                 i_text[item_id].append(s1)
-                i_time[user_id].append(t1)
+                i_time[item_id].append(t1)
             i_rid[item_id] = []
             for s in item_rids[item_id]:
                 i_rid[item_id].append(int(s))
@@ -270,6 +273,7 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
             reid_user_valid.append(u_rid[user_id])
         else:
             u_text[user_id] = [['<PAD/>']]
+            u_time[user_id] = [[0]]
             u_rid[user_id] = [int(0)]
             reid_user_valid.append(u_rid[user_id])
 
@@ -277,7 +281,8 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
             reid_item_valid.append(i_rid[item_id])
         else:
             i_text[item_id] = [['<PAD/>']]
-            i_text[item_id] = [int(0)]
+            i_time[item_id] = [[0]]
+            i_rid[item_id] = [int(0)]
             reid_item_valid.append(i_rid[item_id])
 
         y_valid.append(float(line[2]))
