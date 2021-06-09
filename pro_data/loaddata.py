@@ -6,8 +6,8 @@ import pandas as pd
 import pickle
 import numpy as np
 
-TPS_DIR = '/content/NARRE/data/music'
-TP_file = os.path.join(TPS_DIR, 'Digital_Music_5.json')
+TPS_DIR = '/content/NARRE2/data/music'
+TP_file = os.path.join(TPS_DIR, 'reviews_Musical_Instruments_5.json')
 
 f = open(TP_file)
 users_id = []
@@ -38,7 +38,7 @@ data = pd.DataFrame(
      'item_id': pd.Series(items_id),
      'ratings': pd.Series(ratings),
      'reviews': pd.Series(reviews),
-     'time': pd.Series(times)}
+     'times': pd.Series(times)}
 )[['user_id', 'item_id', 'ratings', 'reviews', 'times']]
 
 # trainsform data to index
@@ -65,7 +65,7 @@ def numerize(tp):
     return tp
 
 data = numerize(data)
-tp_rating = data[['user_id', 'item_id', 'ratings', 'time']]
+tp_rating = data[['user_id', 'item_id', 'ratings', 'times']]
 
 # split data
 # ===================================================

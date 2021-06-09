@@ -48,7 +48,7 @@ def pad_sentences(u_text, u_len, u2_len, padding_word="<PAD/>"):
 
     u_text2 = {}
     for i in u_text.keys():
-        u_reviews = u_text[i][0]
+        u_reviews = u_text[i]
         padded_u_train = []
         for ri in range(review_num):
             if ri < len(u_reviews):
