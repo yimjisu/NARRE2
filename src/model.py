@@ -5,7 +5,8 @@ tf.disable_v2_behavior()
 class NARRE(object):
 
     def __init__(
-            self, review_num_u, review_num_i, review_len_u, review_len_i, user_num, item_num, num_classes,
+            self, review_num_u, review_num_i, review_len_u, review_len_i, 
+            user_num, item_num, num_classes,
             user_vocab_size, item_vocab_size, n_latent, embedding_id, attention_size,
             embedding_size, filter_sizes, num_filters, l2_reg_lambda=0.0):
 
@@ -31,6 +32,7 @@ class NARRE(object):
         self.input_i = tf.placeholder(tf.int32, [None, review_num_i, review_len_i], name="input_i")
         self.input_reuid = tf.placeholder(tf.int32, [None, review_num_u], name="input_reuid")
         self.input_reiid = tf.placeholder(tf.int32, [None, review_num_i], name="input_reiid")
+
         self.input_y = tf.placeholder(tf.float32, [None, 1], name="input_y")
         self.input_uid = tf.placeholder(tf.int32, [None, 1], name="input_uid")
         self.input_iid = tf.placeholder(tf.int32, [None, 1], name="input_iid")

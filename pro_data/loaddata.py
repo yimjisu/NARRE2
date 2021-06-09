@@ -14,6 +14,7 @@ users_id = []
 items_id = []
 ratings = []
 reviews = []
+times = []
 np.random.seed(2017)
 
 for line in f:
@@ -28,6 +29,7 @@ for line in f:
     users_id.append(str(js['reviewerID']))
     items_id.append(str(js['asin']))
     ratings.append(str(js['overall']))
+    times.append(str(js['unixReviewTime']))
 
 # get primal data
 # ===================================================
@@ -35,8 +37,9 @@ data = pd.DataFrame(
     {'user_id': pd.Series(users_id),
      'item_id': pd.Series(items_id),
      'ratings': pd.Series(ratings),
-     'reviews': pd.Series(reviews)}
-)[['user_id', 'item_id', 'ratings', 'reviews']]
+     'reviews': pd.Series(reviews),
+     'time': pd.Series(times)}
+)[['user_id', 'item_id', 'ratings', 'reviews', 'times']]
 
 # trainsform data to index
 # ==================================================
@@ -62,7 +65,7 @@ def numerize(tp):
     return tp
 
 data = numerize(data)
-tp_rating = data[['user_id', 'item_id', 'ratings']]
+tp_rating = data[['user_id', 'item_id', 'ratings', 'time']]
 
 # split data
 # ===================================================
@@ -97,17 +100,18 @@ for i in data.values:
     user_id = i[0]
     item_id = i[1]
     reviews_text = i[3]
+    time = i[4]
     if user_id in user_reviews:
-        user_reviews[user_id].append(reviews_text)
+        user_reviews[user_id].append((reviews_text, time))
         user_rid[user_id].append(item_id)
     else:
         user_rid[user_id] = [item_id]
         user_reviews[user_id] = [reviews_text]
     if item_id in item_reviews:
-        item_reviews[item_id].append(reviews_text)
+        item_reviews[item_id].append((reviews_text, time))
         item_rid[item_id].append(user_id)
     else:
-        item_reviews[item_id] = [reviews_text]
+        item_reviews[item_id] = [(reviews_text, time)]
         item_rid[item_id] = [user_id]
 
 for i in data2.values:
@@ -117,12 +121,12 @@ for i in data2.values:
         l = 1
     else:
         user_rid[user_id] = [0]
-        user_reviews[user_id] = ['0']
+        user_reviews[user_id] = [('0', 0)]
     if item_id in item_reviews:
         l = 1
     else:
         item_rid[item_id] = [0]
-        item_reviews[item_id] = ['0']
+        item_reviews[item_id] = [('0', 0)]
 
 pickle.dump(user_reviews, open(os.path.join(TPS_DIR, 'user_review'), 'wb'))
 pickle.dump(item_reviews, open(os.path.join(TPS_DIR, 'item_review'), 'wb'))

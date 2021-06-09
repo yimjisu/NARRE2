@@ -48,7 +48,7 @@ def pad_sentences(u_text, u_len, u2_len, padding_word="<PAD/>"):
 
     u_text2 = {}
     for i in u_text.keys():
-        u_reviews = u_text[i]
+        u_reviews = u_text[i][0]
         padded_u_train = []
         for ri in range(review_num):
             if ri < len(u_reviews):
@@ -204,8 +204,10 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
     iid_train = []
     y_train = []
     u_text = {}
+    u_time = {}
     u_rid = {}
     i_text = {}
+    i_time = {}
     i_rid = {}
     i = 0
 
@@ -222,10 +224,11 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
             reid_user_train.append(u_rid[user_id])
         else:
             u_text[user_id] = []
-            for s in user_reviews[user_id]:
+            for s, t1 in user_reviews[user_id]:
                 s1 = clean_str(s)
                 s1 = s1.split(" ")
                 u_text[user_id].append(s1)
+                u_time[user_id].append(t1)
             u_rid[user_id] = []
             for s in user_rids[user_id]:
                 u_rid[user_id].append(int(s))
@@ -236,10 +239,11 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
             reid_item_train.append(i_rid[item_id])
         else:
             i_text[item_id] = []
-            for s in item_reviews[item_id]:
+            for s, t1 in item_reviews[item_id]:
                 s1 = clean_str(s)
                 s1 = s1.split(" ")
                 i_text[item_id].append(s1)
+                i_time[user_id].append(t1)
             i_rid[item_id] = []
             for s in item_rids[item_id]:
                 i_rid[item_id].append(int(s))
@@ -300,7 +304,7 @@ def load_data_and_labels(train_data, valid_data, user_review, item_review, user_
     item_num = len(i_text)
     print("user_num:", user_num)
     print("item_num:", item_num)
-    return [u_text, i_text, y_train, y_valid, u_len, i_len, u2_len, i2_len, uid_train,
+    return [u_text, i_text, u_time, i_time, y_train, y_valid, u_len, i_len, u2_len, i2_len, uid_train,
             iid_train, uid_valid, iid_valid, user_num, item_num,
             reid_user_train, reid_item_train, reid_user_valid, reid_item_valid]
 
@@ -311,7 +315,7 @@ if __name__ == '__main__':
     FLAGS = tf.flags.FLAGS
     #FLAGS._parse_flags()
 
-    u_text, i_text, y_train, y_valid, vocabulary_user, vocabulary_inv_user, vocabulary_item, \
+    u_text, i_text, u_time, i_time, y_train, y_valid, vocabulary_user, vocabulary_inv_user, vocabulary_item, \
     vocabulary_inv_item, uid_train, iid_train, uid_valid, iid_valid, user_num, item_num, reid_user_train, reid_item_train, reid_user_valid, reid_item_valid = \
         load_data(FLAGS.train_data, FLAGS.valid_data, FLAGS.user_review, FLAGS.item_review, FLAGS.user_review_id,
                   FLAGS.item_review_id, FLAGS.stopwords)
@@ -352,12 +356,21 @@ if __name__ == '__main__':
     para['review_num_i'] = i_text[0].shape[0]
     para['review_len_u'] = u_text[1].shape[1]
     para['review_len_i'] = i_text[1].shape[1]
+
+    para['time_num_u'] = u_time[0].shape[0]
+    para['time_num_i'] = i_time[0].shape[0]
+    para['time_len_u'] = u_time[1].shape[1]
+    para['time_len_i'] = i_time[1].shape[1]
+    
     para['user_vocab'] = vocabulary_user
     para['item_vocab'] = vocabulary_item
     para['train_length'] = len(y_train)
     para['test_length'] = len(y_valid)
     para['u_text'] = u_text
     para['i_text'] = i_text
+
+    para['u_time'] = u_time
+    para['i_time'] = i_time
 
     # print("user_num", para['user_num'])
     # print("item num", para['item_num'])

@@ -76,6 +76,46 @@ def dev_step(u_batch, i_batch, uid, iid, reuid, reiid, y_batch, writer=None):
     return loss, accuracy, mae
 
 if __name__ == '__main__':
+    cf = configparser.ConfigParser()
+    cf.read("content/NARRE/DER/conf/default_setting.conf")
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--root_path', type=str, default=cf.get("path", "root_path"), required=False, help='root_path')
+    parser.add_argument('--input_data_type', type=str, default=cf.get("path", "input_data_type"), required=False, help='input_data_type')
+    parser.add_argument('--output_path', type=str, default=cf.get("path", "output_path"), required=False, help='output_path')
+    parser.add_argument('--log_conf_path', type=str, default=cf.get("path", "log_conf_path"), required=False, help='log_conf_path')
+
+    parser.add_argument('--global_dimension', type=int, default=cf.getint("parameters", "global_dimension"), required=False, help='number of latent factors')
+    parser.add_argument('--word_dimension', type=int, default=cf.getint("parameters", "word_dimension"), required=False, help='word_dimension')
+    parser.add_argument('--batch_size', type=int, default=cf.getint("parameters", "batch_size"), required=False, help='batch_size')
+    parser.add_argument('--K', type=int, default=cf.getint("parameters", "K"), required=False, help='K')
+    parser.add_argument('--epoch', type=int, default=cf.getint("parameters", "epoch"), required=False, help='epoch')
+    parser.add_argument('--learning_rate', type=float, default=float(cf.get("parameters", "learning_rate")), required=False, help='learning_rate')
+    parser.add_argument('--reg', type=float, default=float(cf.get("parameters", "reg")), required=False, help='reg')
+    parser.add_argument('--mode', type=str, default=cf.get("parameters", "mode"), required=False, help='reg')
+    parser.add_argument('--merge', type=str, default=cf.get("parameters", "merge"), required=False, help='merge')
+    parser.add_argument('--concat', type=int, default=int(cf.get("parameters", "concat")), required=False, help='concat')
+    parser.add_argument('--item_review_combine', type=str, default=cf.get("parameters", "item_review_combine"), required=False, help='item_review_combine')
+    parser.add_argument('--item_review_combine_c', type=float, default=float(cf.get("parameters", "item_review_combine_c")),
+                        required=False, help='item_review_combine_c')
+    parser.add_argument('--lmd', type=float, default=float(cf.get("parameters", "lmd")), required=False, help='lmd')
+    parser.add_argument('--drop_out_rate', type=float, default=float(cf.get("parameters", "drop_out_rate")), required=False, help='drop_out_rate')
+
+    args = parser.parse_args()
+    print(os.path.join(args.root_path, args.log_conf_path))
+    '''    
+    logging.config.fileConfig(os.path.join(args.root_path, args.log_conf_path))
+    print(os.path.join(args.root_path, args.log_conf_path))
+    args.logger = logging.getLogger()
+    '''
+
+    result_file = 'content/NARRE/results/DER_result_' + args.mode + args.input_data_type.split('/')[-1]
+    f = open(result_file, 'wb')
+    f.write((str(args.mode) + ' parameters:').encode())
+    f.write(str(args).encode())
+    f.write('\n'.encode())
+    f.write((str(args.mode) + ' result:').encode())
+    f.write('\n'.encode())
 
     FLAGS = tf.flags.FLAGS
     #FLAGS._parse_flags()
@@ -94,12 +134,22 @@ if __name__ == '__main__':
     review_num_i = para['review_num_i']
     review_len_u = para['review_len_u']
     review_len_i = para['review_len_i']
+    
+    time_num_u = para['time_num_u']
+    time_num_i = para['time_num_i']
+    time_len_u = para['time_len_u']
+    time_len_i = para['time_len_i']
+    
+    
     vocabulary_user = para['user_vocab']
     vocabulary_item = para['item_vocab']
     train_length = para['train_length']
     test_length = para['test_length']
     u_text = para['u_text']
     i_text = para['i_text']
+
+    u_time = para['u_time']
+    i_time = para['i_time']
 
     np.random.seed(2017)
     random_seed = 2017
@@ -109,6 +159,11 @@ if __name__ == '__main__':
     print("review_len_u", review_len_u)
     print("review_num_i", review_num_i)
     print("review_len_i", review_len_i)
+
+    print("time_num_u", time_num_u)
+    print("time_len_u", time_len_u)
+    print("time_num_i", time_num_i)
+    print("time_len_i", time_len_i)
 
     with tf.Graph().as_default():
 
@@ -271,8 +326,8 @@ if __name__ == '__main__':
                     u_valid = []
                     i_valid = []
                     for i in range(len(userid_valid)):
-                        u_valid.append(u_text[userid_valid[i][0]])
-                        i_valid.append(i_text[itemid_valid[i][0]])
+                        u_valid.append((u_text[userid_valid[i][0]], u_time[userid_valid[i][0]]))
+                        i_valid.append((i_text[itemid_valid[i][0]], i_time[itemid_valid[i][0]]))
                     u_valid = np.array(u_valid)
                     i_valid = np.array(i_valid)
 
